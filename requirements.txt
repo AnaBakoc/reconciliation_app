@@ -68,10 +68,6 @@ pydeck==0.9.1
 Pygments==2.19.2
 pylatexenc==2.10
 pyobjc-core==12.0
-pyobjc-framework-Cocoa==12.0
-pyobjc-framework-CoreML==12.0
-pyobjc-framework-Quartz==12.0
-pyobjc-framework-Vision==12.0
 pypdfium2==4.30.0
 pytesseract==0.3.13
 python-dateutil==2.9.0.post0
