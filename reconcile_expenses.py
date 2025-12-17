@@ -595,7 +595,28 @@ def match_expenses(
 
     # ---------- 4c) Special rule: Hotel stays with date-based grouping ----------
     df_all, hotel_stay_count = process_hotel_stays(df_all, json_pair_set, bank_pair_set)
+    # ---------- 4d) Fallback: standalone parking ----------
+    parking_mask = (
+        (df_all['is_parking']) &
+        (~df_all['HotelParkingGroup']) &
+        (df_all['Payment Method'] == 'cash')
+    )
 
+    for idx, row in df_all[parking_mask].iterrows():
+        amt = row['amount_cents_abs']
+        if pd.isna(amt):
+            continue
+
+        where = []
+        if (row['name_canon'], int(amt)) in json_pair_set:
+            where.append('IBM-izvod')
+        if (row['name_canon'], int(amt)) in bank_pair_set:
+            where.append('eBanking')
+
+        if where:
+            df_all.at[idx, 'Payment Method'] = 'company card'
+            df_all.at[idx, 'Matched In'] = ','.join(where)
+            df_all.at[idx, 'Match Level'] = 'amount-only (standalone parking)'
     # ---------- rebuild classification from df_all ----------
     classified = df_all[
         [
