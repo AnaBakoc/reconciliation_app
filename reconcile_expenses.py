@@ -531,6 +531,15 @@ def match_expenses(
             )
         )
 
+        agency_booking_fee_part = (
+            df_all['Expense Type Canon'].str.contains('AGENCY', na=False) &
+            df_all['Expense Type Canon'].str.contains('BOOKING', na=False) &
+            (
+                df_all['Expense Type Canon'].str.contains('FEE', na=False) |
+                df_all['Expense Type Canon'].str.contains('FEES', na=False)
+            )
+        )
+
         mask = (
             (df_all['Payment Method'] == 'cash') &
             (df_all.index != idx) &
@@ -538,7 +547,7 @@ def match_expenses(
             (df_all['RPTKEY'] == row['RPTKEY']) &
             (df_all['Emp Name'] == row['Emp Name']) &
             (df_all['Transaction Date'] == row['Transaction Date']) &
-            (airline_fee_part | airport_fee_part)
+            (airline_fee_part | airport_fee_part | agency_booking_fee_part)
         )
 
         fee_candidates = df_all[mask]
